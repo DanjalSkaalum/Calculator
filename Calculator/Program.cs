@@ -3,7 +3,7 @@
     internal class Program
     {
         const int MaxHistorySize = 10;
-        double[] results = new double[MaxHistorySize];
+        string[,] results = new string[MaxHistorySize, 4]; // Adding a column for the operation type
         int resultIndex = 0;
 
         // Constants for menu options
@@ -64,20 +64,25 @@
 
                 // Perform calculation based on user choice
                 double result = 0;
+                string operation = "";
 
                 switch (choice)
                 {
                     case Add:
                         result = calculator.Addition(num1, num2);
+                        operation = "Add";
                         break;
                     case Subtract:
                         result = calculator.Subtraction(num1, num2);
+                        operation = "Subtract";
                         break;
                     case Multiply:
                         result = calculator.Multiplication(num1, num2);
+                        operation = "Multiply by";
                         break;
                     case Divide:
                         result = calculator.Division(num1, num2);
+                        operation = "Divide by";
                         break;
                     default:
                         Console.WriteLine("Invalid choice. Please enter a number between 1 and 6.");
@@ -85,7 +90,7 @@
                 }
 
                 // Store result in history
-                calculator.StoreResult(result);
+                calculator.StoreResult(num1, num2, result, operation);
 
                 // Display result
                 Console.WriteLine($"Result: {result}\n");
@@ -145,20 +150,27 @@
         }
 
         // Method to store result in the history array
-        void StoreResult(double result)
+        void StoreResult(double num1, double num2, double result, string operation)
         {
-            results[resultIndex] = result;
+            results[resultIndex, 0] = num1.ToString();
+            results[resultIndex, 1] = num2.ToString();
+            results[resultIndex, 2] = result.ToString();
+            results[resultIndex, 3] = operation;
+
             resultIndex = (resultIndex + 1) % MaxHistorySize;
         }
-
         // Method to display the calculation history
+        //TODO Make it so the first number is used first, instead of 10.
         void DisplayHistory()
         {
             Console.WriteLine("Calculation History:");
             for (int i = 0; i < MaxHistorySize; i++)
             {
                 int index = (resultIndex + i) % MaxHistorySize;
-                Console.WriteLine($"#{i + 1}: {results[index]}");
+                if (results[index, 0] != null)
+                {
+                    Console.WriteLine($"#{i + 1}: {results[index, 0]} {results[index, 3]} {results[index, 1]} = {results[index, 2]}");
+                }
             }
             Console.WriteLine();
         }
